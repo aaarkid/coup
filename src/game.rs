@@ -1,15 +1,15 @@
 use rand::seq::SliceRandom;
 
 use crate::character::Character;
+use crate::gameai::GameStateAI;
 use crate::player::Player;
 use crate::action::{Action, self, BlockAction};
 use crate::phase::Phase;
 
-#[derive(Debug)]
 pub struct GameState {
     pub players: Vec<Box<dyn Player>>,
     pub deck: Vec<Character>,
-    pub revealed_characters: [Option<Character>; 6],
+    pub revealed_characters: Vec<Option<Character>>,
     pub history: Vec<(Action, usize)>,
     pub current_player: usize,
     pub phase: Phase,
@@ -17,11 +17,17 @@ pub struct GameState {
 
 impl GameState {
     pub fn new(players: Vec<Box<dyn Player>>) -> GameState {
+        let cards_to_reveal = 15 - 2 * players.len();
+        let mut revealed_characters = Vec::new();
+        for _ in 0..cards_to_reveal {
+            revealed_characters.push(None);
+        }
+
         GameState {
             players,
             deck: Character::create_deck(),
-            revealed_characters: [None; 6],
-            history: vec![],
+            revealed_characters: revealed_characters,
+            history: Vec::new(),
             current_player: 0,
             phase: Phase::Action,
         }
@@ -121,7 +127,7 @@ impl GameState {
             // ACTION PHASE
             self.phase = Phase::Action;
             let actions = self.players[current_player].possible_actions(self);
-            let action = self.players[current_player].choose_action(actions, self);
+            let action = self.players[current_player].choose_action(actions, &GameStateAI::from_gamestate(self, self.players[current_player].name()));
             self.history.push((action.clone(), current_player));
             let mut challenged = false;
             let mut blocked = false;
@@ -136,7 +142,7 @@ impl GameState {
                         continue;
                     }
                     challenges.push(Action::Pass);
-                    let challenge = self.players[i].choose_action(challenges, self);
+                    let challenge = self.players[i].choose_action(challenges, &GameStateAI::from_gamestate(self, self.players[current_player].name()));
                     self.history.push((challenge.clone(), i));
                     
                     // if Pass was picked, continue
@@ -162,7 +168,7 @@ impl GameState {
                             continue;
                         }
                         blocks.push(Action::Pass);
-                        let block = self.players[i].choose_action(blocks, self);
+                        let block = self.players[i].choose_action(blocks, &GameStateAI::from_gamestate(self, self.players[current_player].name()));
                         self.history.push((block.clone(), i));
                         
                         // if Pass was picked, continue
@@ -180,7 +186,7 @@ impl GameState {
                                     continue;
                                 }
                                 challenges.push(Action::Pass);
-                                let challenge = self.players[j].choose_action(challenges, self);
+                                let challenge = self.players[j].choose_action(challenges, &GameStateAI::from_gamestate(self, self.players[current_player].name()));
                                 self.history.push((challenge.clone(), j));
                                 
                                 // if Pass was picked, continue

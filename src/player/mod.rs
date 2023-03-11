@@ -3,16 +3,18 @@ use std::fmt::Debug;
 use crate::character::Character;
 use crate::game::GameState;
 use crate::action::Action;
+use crate::gameai::GameStateAI;
 
+pub mod ai;
 
-pub trait Player: Debug {
-    fn choose_action(&self, possible_actions: Vec<Action>, game_state: &GameState) -> Action;
+pub trait Player {
+    fn choose_action(&self, possible_actions: Vec<Action>, game_state: &GameStateAI) -> Action;
     fn possible_actions(&self, game_state: &GameState) -> Vec<Action>;
     fn name(&self) -> String;
     fn coins(&self) -> usize;
     fn add_coins(&mut self, coins: usize);
     fn lose_coins(&mut self, coins: usize) -> Result<(), String>;
-    fn hand(&self) -> &[Character];
+    fn hand(&self) -> Vec<Character>;
     fn choose_card(&self, game_state: &GameState) -> Character;
     fn add_card_to_hand(&mut self, card: Character);
     fn remove_card_from_hand(&mut self, card: Character) -> Result<(), String>;
@@ -29,14 +31,14 @@ impl HumanPlayer {
     pub fn new(name: &str) -> HumanPlayer {
         HumanPlayer {
             name: name.to_string(),
-            coins: 3,
+            coins: 2,
             hand: Vec::new(),
         }
     }
 }
 
 impl Player for HumanPlayer {
-    fn choose_action(&self, actions: Vec<Action>, _game_state: &GameState) -> Action {
+    fn choose_action(&self, actions: Vec<Action>, _game_state: &GameStateAI) -> Action {
         //display all possible actions in one line
         let coins = self.coins();
         print!("{}: You have {} coins. Possible actions are: ", self.name, coins);
@@ -215,8 +217,8 @@ impl Player for HumanPlayer {
         }
     }
 
-    fn hand(&self) -> &[Character] {
-        &self.hand
+    fn hand(&self) -> Vec<Character> {
+        self.hand.clone()
     }
 
     fn add_card_to_hand(&mut self, card: Character) {

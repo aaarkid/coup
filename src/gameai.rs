@@ -1,26 +1,26 @@
+use rusty_machine::prelude::Matrix;
+
 use crate::action::{Action, BlockAction, ChallengeAction};
 use crate::character::Character;
 use crate::game::GameState;
+use crate::phase::Phase;
 
 #[derive(Debug)]
 pub struct GameStateAI {
-    pub players_hands: Vec<usize>,
-    pub deck_size: usize,
-    pub revealed_characters: [Option<Character>; 6],
-    pub history: Vec<(Action, usize)>,
-    pub current_player: usize,
-    pub phase: Phase,
+    pub players_lives: Vec<usize>,
+    pub players_coins: Vec<usize>,
+    pub revealed_characters: Vec<Option<Character>>,
+    pub cards_in_hand: Vec<Character>,
 }
 
+
 impl GameStateAI {
-    pub fn from_gamestate(gamestate: &GameState) -> GameStateAI {
+    pub fn from_gamestate(gamestate: &GameState, player_name: String) -> GameStateAI {
         GameStateAI {
-            players_hands: gamestate.players.iter().map(|player| player.hand.len()).collect(),
-            deck_size: gamestate.deck.len(),
+            players_lives: gamestate.players.iter().map(|player| player.hand().len()).collect(),
+            players_coins: gamestate.players.iter().map(|player| player.coins()).collect(),
             revealed_characters: gamestate.revealed_characters.clone(),
-            history: gamestate.history.clone(),
-            current_player: gamestate.current_player,
-            phase: gamestate.phase,
+            cards_in_hand: gamestate.players.iter().find(|player| player.name() == player_name).unwrap().hand().clone(),
         }
     }
 }
