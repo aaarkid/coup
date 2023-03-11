@@ -16,7 +16,7 @@ fn main() {
     let num_players: usize = num_players.trim_end().parse().expect("Please type a number!");
     //ask for names
     let mut players: Vec<Box<(dyn Player + 'static)>> = Vec::new();
-    for i in 0..num_players {
+    for _i in 0..num_players {
         let mut name = String::new();
         std::io::stdin().read_line(&mut name).expect("Failed to read line");
         let name = name.trim_end();

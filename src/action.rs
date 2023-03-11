@@ -66,7 +66,7 @@ impl std::fmt::Display for Action {
             Action::Assassinate(target) => write!(f, "Assassinate player {}", target),
             Action::Steal(target, _) => write!(f, "Steal from player {}", target),
             Action::Exchange => write!(f, "Exchange"),
-            Action::Block(block_action, target, char) => write!(f, "Block {} on player {}.", block_action, target),
+            Action::Block(block_action, target, _char) => write!(f, "Block {} on player {}.", block_action, target),
             Action::Challenge(challenge_action, target) => write!(f, "Challenge {} on player {}", challenge_action, target),
             Action::Pass => write!(f, "Pass"),
         }

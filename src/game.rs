@@ -254,7 +254,7 @@ impl GameState {
     }
 }
 
-pub fn start_game(mut state: &mut GameState) {
+pub fn start_game(state: &mut GameState) {
     state.players.shuffle(&mut rand::thread_rng());
 
     state.deck.shuffle(&mut rand::thread_rng());
@@ -271,7 +271,7 @@ pub fn start_game(mut state: &mut GameState) {
 impl std::fmt::Display for GameState {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         let mut s = String::new();
-        for (i, player) in self.players.iter().enumerate() {
+        for (_i, player) in self.players.iter().enumerate() {
             s.push_str(&format!("{} has {} coins and {:?} cards in hand. ", player.name(), player.coins(), player.hand()));
         }
         write!(f, "{}", s)

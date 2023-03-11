@@ -121,7 +121,7 @@ impl Player for HumanPlayer {
                 while !game_state.history[search].0.is_action() {
                     search -= 1;
                 }
-                let (action, player_index) = &game_state.history[search];
+                let (action, _player_index) = &game_state.history[search];
 
                 match action {
                     Action::Assassinate(self_index) if *self_index == index => {
@@ -162,7 +162,7 @@ impl Player for HumanPlayer {
                 let (action, player_index) = &game_state.history[search];
                 let player_index = *player_index;
                 match action {
-                    Action::Block(block_action, player, char) => {
+                    Action::Block(block_action, _player, _char) => {
                         match block_action {
                             crate::action::BlockAction::Assassinate(from) => {
                                 actions.push(Action::Challenge(crate::action::ChallengeAction::BlockAssassination(*from), player_index));
